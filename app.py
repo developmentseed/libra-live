@@ -119,8 +119,8 @@ def get_source(path):
 def render_tile(id, bands, res=500, bounds=None, point=None):
     image_res = 30
     data = []
-    path = id[3:6]
-    row = id[6:9]
+    path = id[10:13]
+    row = id[13:16]
 
     if point:
         point = map(float, point.split(','))
@@ -132,7 +132,8 @@ def render_tile(id, bands, res=500, bounds=None, point=None):
     window = [[0, 0], [0, 0]]
 
     for i, band in enumerate(bands):
-        image_uri = 'http://landsat-pds.s3.amazonaws.com/L8/%s/%s/%s/%s_B%s.TIF' % (path, row, id, id, band)
+        image_uri = 'http://landsat-pds.s3.amazonaws.com/c1/L8/%s/%s/%s/%s_B%s.TIF' % (path, row, id, id, band)
+        print(image_uri)
         src = get_source(image_uri)
         print('Band %s' % band)
         if i == 0:
@@ -289,20 +290,20 @@ def handle_ioerror(error):
     return '', 404
 
 
-# @app.route('/image/<id>')
-# def get_image(id):
-#     product = request.args.get('product', 'default')
-#     resolution = int(request.args.get('resolution', 1)) * 500
-#     point = request.args.get('point', None)
-#     bounds = request.args.get('bounds', None)
-#     tile = read_tile(id, product, resolution, bounds=bounds, point=point)
-#
-#     return tile, 200, {
-#         'Content-Type': 'image/png'
-#     }
+@app.route('/image/landsat/<id>')
+def get_image(id):
+    product = request.args.get('product', 'default')
+    resolution = int(request.args.get('resolution', 1)) * 500
+    point = request.args.get('point', None)
+    bounds = request.args.get('bounds', None)
+    tile = read_tile(id, product, resolution, bounds=bounds, point=point)
+
+    return tile, 200, {
+        'Content-Type': 'image/png'
+    }
 
 @app.route('/image/viirs')
-def get_image():
+def get_viirs_image():
     resolution = int(request.args.get('resolution', 1)) * 500
     point = request.args.get('point', None)
     bounds = request.args.get('bounds', None)
