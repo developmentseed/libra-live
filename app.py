@@ -189,7 +189,7 @@ def render_viirs_tile(bands, res=500, bounds=None, point=None):
     left = (point[1] + 180) / image_res - ( res / 2 )
     bottom = (75 - point[0]) / image_res + ( res / 2 )
     right = (point[1] + 180) / image_res + ( res / 2 )
-    print(top, left, bottom, right)
+
     window = [
           [top, bottom],
           [left, right]
@@ -198,7 +198,7 @@ def render_viirs_tile(bands, res=500, bounds=None, point=None):
     image = np.empty(shape=(1, res, res)).astype(src.profile['dtype'])
     image = src.read(out=image, window=window)
 
-    p_low, p_high = np.percentile(image, (0, 100))
+    p_low, p_high = np.percentile(image, (1, 99))
     image = rescale_intensity(image, in_range=(p_low, p_high), out_range=(0, 255))
 
     data = np.empty(shape=(3, res, res)).astype(src.profile['dtype'])
@@ -302,7 +302,7 @@ def handle_ioerror(error):
 #     }
 
 @app.route('/image/viirs')
-def get_image(id):
+def get_image():
     resolution = int(request.args.get('resolution', 1)) * 500
     point = request.args.get('point', None)
     bounds = request.args.get('bounds', None)
@@ -320,7 +320,7 @@ app.wsgi_app = DispatcherMiddleware(None, {
 
 if __name__ == '__main__':
 
-    read_viirs_tile(500, bounds=None, point='38.9072,-77.0369')
+    # read_viirs_tile(500, bounds=None, point='38.9072,-77.0369')
 
     # read_tile(
         # 'LC81920302016304LGN00',
@@ -330,4 +330,4 @@ if __name__ == '__main__':
         # point='10.9518622,43.8459117',
         # # bounds='11.066665649414062,43.65793702655821,11.4312744140625,43.86423779837694'
     # )
-    # app.run(host='0.0.0.0', port=8000, debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
